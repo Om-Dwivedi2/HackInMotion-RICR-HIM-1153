@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FAQItem from './FAQItem';
+import FAQItem from './FAQitem';
 
 const faqs = [
   {
