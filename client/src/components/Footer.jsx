@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiSearch, FiLinkedin, FiTwitter, FiGithub, FiArrowRight } from 'react-icons/fi';
+import logo from '../assets/logo.png';
 
 const Footer = () => {
   return (
@@ -11,7 +12,7 @@ const Footer = () => {
           {/* Brand & Description */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center mb-4">
-              <img src="/logo.png" alt="CareerLens Logo" className="h-8 md:h-10 w-auto" />
+              <img src={logo} alt="CareerLens Logo" className="h-16 md:h-20 w-auto object-contain" />
             </Link>
             <p className="text-[var(--text-secondary)] text-sm mb-6">
               AI-powered career preparation for your next opportunity.
