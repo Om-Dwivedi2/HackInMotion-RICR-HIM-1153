@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import api from '../../api/axios';
 
 const EditProfileModal = ({ isOpen, onClose, user, onUpdate }) => {
   const [name, setName] = useState(user?.name || '');
@@ -13,15 +14,17 @@ const EditProfileModal = ({ isOpen, onClose, user, onUpdate }) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // API integration placeholder
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Profile updated successfully');
-      if (onUpdate) {
-        onUpdate({ ...user, name, phone });
+      const response = await api.patch('/users/profile', { name, phone });
+      
+      if (response.data.success) {
+        toast.success('Profile updated successfully');
+        if (onUpdate) {
+          onUpdate(response.data.data.user);
+        }
+        onClose();
       }
-      onClose();
     } catch (err) {
-      toast.error('Failed to update profile');
+      toast.error(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setIsLoading(false);
     }

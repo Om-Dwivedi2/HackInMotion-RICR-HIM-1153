@@ -77,3 +77,27 @@ export const getMe = (req, res) => {
     data: { user: authService.getSafeUser(req.user) },
   });
 };
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: "Both current and new passwords are required", data: null });
+    }
+    
+    if (!validatePassword(newPassword)) {
+      return res.status(400).json({ success: false, message: "New password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number", data: null });
+    }
+    
+    const user = await authService.changePassword(req.user._id, currentPassword, newPassword);
+    
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+      data: { user }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

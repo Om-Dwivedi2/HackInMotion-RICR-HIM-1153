@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiX, FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import api from '../../api/axios';
 
 const ChangePasswordModal = ({ isOpen, onClose }) => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -43,16 +44,18 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
     setIsLoading(true);
     try {
       const payload = { currentPassword, newPassword };
-      // API integration placeholder
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Password changed successfully');
-      onClose();
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setErrors({});
+      const response = await api.post('/auth/change-password', payload);
+      
+      if (response.data.success) {
+        toast.success('Password changed successfully');
+        onClose();
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setErrors({});
+      }
     } catch (err) {
-      toast.error('Failed to change password');
+      toast.error(err.response?.data?.message || 'Failed to change password');
     } finally {
       setIsLoading(false);
     }

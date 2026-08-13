@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiUploadCloud, FiFileText } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import api from '../../../api/axios';
 
 const ResumeUploadCard = ({ onUploadSuccess }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -57,14 +58,27 @@ const ResumeUploadCard = ({ onUploadSuccess }) => {
     e.target.value = null;
   };
 
-  const processUpload = (file) => {
+  const processUpload = async (file) => {
     setIsUploading(true);
-    // Simulate upload
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await api.post('/resumes', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      if (response.data.success) {
+        toast.success('Resume uploaded successfully.');
+        onUploadSuccess(response.data.data);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to upload resume.');
+    } finally {
       setIsUploading(false);
-      toast.success('Resume selected successfully.');
-      onUploadSuccess();
-    }, 1500);
+    }
   };
 
   return (

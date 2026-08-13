@@ -2,19 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiSearch, FiMenu, FiX, FiBell, FiChevronDown } from 'react-icons/fi';
 import logo from "../assets/logo.png"
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isDashboard = location.pathname.includes('/dashboard');
-  
-  // Use localStorage to determine login state. For a real app, use Context.
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, [location]);
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
 
   return (
     <nav className={`w-full border-b border-[var(--border)] bg-[var(--surface)] ${isDashboard ? '' : 'sticky top-0 z-50'}`}>
@@ -60,9 +55,9 @@ const Navbar = () => {
                 </button>
                 <div className="flex items-center gap-3 cursor-pointer py-1 px-2 rounded-full hover:bg-gray-50 transition-colors">
                   <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-sm">
-                    OD
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
-                  <span className="font-semibold text-sm hidden md:block text-[var(--text-primary)]">Om Dwivedi</span>
+                  <span className="font-semibold text-sm hidden md:block text-[var(--text-primary)]">{user?.name || 'User'}</span>
                   <FiChevronDown className="w-4 h-4 text-gray-500 hidden md:block" />
                 </div>
               </div>
@@ -102,15 +97,12 @@ const Navbar = () => {
                 <div className="mt-4 pt-4 border-t border-[var(--border)] flex flex-col space-y-3 px-3">
                   <div className="flex items-center gap-3 py-2">
                     <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-sm">
-                      OD
+                      {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
-                    <span className="font-medium text-[var(--text-primary)]">Om Dwivedi</span>
+                    <span className="font-medium text-[var(--text-primary)]">{user?.name || 'User'}</span>
                   </div>
                   <button className="text-left px-3 py-2 text-[var(--text-secondary)] hover:bg-[var(--background)] rounded-md">Notifications</button>
-                  <button className="text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-md" onClick={() => {
-                    localStorage.removeItem('token');
-                    setIsLoggedIn(false);
-                  }}>Sign Out</button>
+                  <button className="text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-md" onClick={() => logout()}>Sign Out</button>
                 </div>
               </>
             )}

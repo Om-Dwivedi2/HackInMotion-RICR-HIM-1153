@@ -1,21 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../api/axios';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import ProfileSection from '../components/settings/ProfileSection';
 import CareerPreferences from '../components/settings/CareerPreferences';
 import AccountSection from '../components/settings/AccountSection';
+import { useAuth } from '../context/AuthContext';
 
 const Settings = () => {
+  const { user: authUser } = useAuth();
+  
   const [user, setUser] = useState({
-    name: "Om Dwivedi",
-    email: "om@example.com",
-    phone: "+91 98765 43210",
-    initials: "OD",
+    name: authUser?.name || "User",
+    email: authUser?.email || "",
+    phone: authUser?.phone || "",
+    initials: authUser?.name ? authUser.name.charAt(0).toUpperCase() : "U",
   });
 
   const [preferences, setPreferences] = useState({
     targetRole: "Backend Engineer",
     experienceLevel: "Entry Level"
   });
+
+  useEffect(() => {
+    const fetchTarget = async () => {
+      try {
+        const response = await api.get('/targets/active');
+        if (response.data.success && response.data.data) {
+          setPreferences({
+            targetRole: response.data.data.role,
+            experienceLevel: "Entry Level" // Target API currently only handles role, keep experience static or default
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch target preferences", err);
+      }
+    };
+    fetchTarget();
+  }, []);
 
   return (
     <DashboardLayout>
