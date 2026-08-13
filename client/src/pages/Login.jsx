@@ -65,7 +65,7 @@ const Login = () => {
 
       // 5. Success Flow
       // Store auth state (e.g. localStorage, context)
-      // localStorage.setItem('token', response.token);
+      localStorage.setItem('token', 'dummy-token');
 
       navigate('/dashboard');
     } catch (error) {
