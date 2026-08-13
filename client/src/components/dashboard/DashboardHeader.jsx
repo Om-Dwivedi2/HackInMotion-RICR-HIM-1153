@@ -14,7 +14,7 @@ const DashboardHeader = () => {
           <p className="text-[10px] text-slate-500 font-semibold tracking-widest uppercase mt-1">Analyze. Focus. Grow.</p>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-2 md:gap-6">
         <span className="hidden md:block font-bold text-lg mr-4">Overview</span>
         <button className="text-gray-400 hover:text-blue-600 transition-colors p-2 rounded-full hover:bg-gray-100">
