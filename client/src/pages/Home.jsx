@@ -4,6 +4,10 @@ import ValueStrip from '../components/home/ValueStrip'
 import CareerJourney from '../components/home/CareerJourney'
 import ResumeAnalyzer from '../components/home/ResumeAnalyzer'
 import SkillGap from '../components/home/SkillGap'
+import MockInterview from '../components/home/MockInterview'
+import ProgressSection from '../components/home/ProgressSection'
+import WhyCareerLens from '../components/home/WhyCareerLens'
+import FinalCTA from '../components/home/FinalCTA'
 
 const Home = () => {
   return (
@@ -13,7 +17,10 @@ const Home = () => {
       <CareerJourney />
       <ResumeAnalyzer />
       <SkillGap />
-      {/* More sections will be added here as we implement them */}
+      <MockInterview />
+      <ProgressSection />
+      <WhyCareerLens />
+      <FinalCTA />
     </>
   )
 }
