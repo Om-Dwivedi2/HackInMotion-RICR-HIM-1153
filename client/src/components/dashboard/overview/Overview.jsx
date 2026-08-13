@@ -8,6 +8,7 @@ import RecentActivity from './RecentActivity';
 import SkillGaps from './SkillGaps';
 import EmptyOverview from './EmptyOverview';
 
+
 import { FiTrendingUp, FiMic, FiAlertTriangle, FiTarget } from 'react-icons/fi';
 
 const ExistingUserOverview = () => {
@@ -16,45 +17,46 @@ const ExistingUserOverview = () => {
       {/* Top Section */}
       <div className="flex flex-col lg:flex-row gap-6 lg:items-center justify-between">
         <WelcomeSection userName="Om" />
-        <TargetRoleCard 
-          role="Backend Engineer" 
-          resumeName="Om_Dwivedi_Resume.pdf" 
-          lastAnalyzed="Aug 12, 2026" 
+
+        <TargetRoleCard
+          role="Backend Engineer"
+          resumeName="Om_Dwivedi_Resume.pdf"
+          lastAnalyzed="Aug 12, 2026"
         />
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Resume Match" 
-          value="82%" 
-          subtitle="Strong Match" 
-          icon={FiTrendingUp} 
-          colorClass="text-green-600" 
+        <StatCard
+          title="Resume Match"
+          value="82%"
+          subtitle="Strong Match"
+          icon={FiTrendingUp}
+          colorClass="text-green-600"
           highlightClass="bg-green-50 text-green-600"
         />
-        <StatCard 
-          title="Interview Score" 
-          value="81/100" 
-          subtitle="Great Progress" 
-          icon={FiMic} 
+        <StatCard
+          title="Interview Score"
+          value="81/100"
+          subtitle="Great Progress"
+          icon={FiMic}
           colorClass="text-purple-600"
-          highlightClass="bg-purple-50 text-purple-600" 
+          highlightClass="bg-purple-50 text-purple-600"
         />
-        <StatCard 
-          title="Skill Gaps" 
-          value="4" 
-          subtitle="Skills to Improve" 
-          icon={FiAlertTriangle} 
-          colorClass="text-orange-500" 
+        <StatCard
+          title="Skill Gaps"
+          value="4"
+          subtitle="Skills to Improve"
+          icon={FiAlertTriangle}
+          colorClass="text-orange-500"
           highlightClass="bg-orange-50 text-orange-500"
         />
-        <StatCard 
-          title="Interviews Completed" 
-          value="6" 
-          subtitle="Total Sessions" 
-          icon={FiTarget} 
-          colorClass="text-blue-600" 
+        <StatCard
+          title="Interviews Completed"
+          value="6"
+          subtitle="Total Sessions"
+          icon={FiTarget}
+          colorClass="text-blue-600"
           highlightClass="bg-blue-50 text-blue-600"
         />
       </div>
@@ -80,7 +82,7 @@ const ExistingUserOverview = () => {
 
 const Overview = () => {
   // Toggle this mock state to see either the empty state or the full dashboard
-  const hasAnalysis = true; 
+  const hasAnalysis = true;
 
   if (!hasAnalysis) {
     return <EmptyOverview />;
