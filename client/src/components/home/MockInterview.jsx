@@ -1,5 +1,6 @@
 import React from 'react';
-import { FiMic, FiUser, FiCheck, FiAlertTriangle, FiStopCircle } from 'react-icons/fi';
+import { FiMic, FiUser, FiCheck, FiAlertTriangle, FiPlay } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const MockInterview = () => {
   return (
@@ -54,9 +55,9 @@ const MockInterview = () => {
                 </span>
                 02:45
               </span>
-              <button className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold px-4 py-2.5 rounded-md flex items-center gap-2 transition-colors">
-                Stop Answering <span className="w-2 h-2 rounded-sm bg-red-400"></span>
-              </button>
+              <Link to="/dashboard/interview" className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-xs font-semibold px-4 py-2.5 rounded-md flex items-center gap-2 transition-colors">
+                <FiPlay className="w-3.5 h-3.5 fill-current" /> Start Mock Interview
+              </Link>
             </div>
           </div>
 

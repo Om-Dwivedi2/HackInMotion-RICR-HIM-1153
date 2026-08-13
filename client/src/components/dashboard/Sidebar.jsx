@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { FiHome, FiFileText, FiBarChart2, FiMic, FiClock, FiSettings, FiLogOut } from 'react-icons/fi';
 
 const navItems = [
@@ -12,6 +12,12 @@ const navItems = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
   
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col hidden md:flex shrink-0">
@@ -48,7 +54,7 @@ const Sidebar = () => {
       </div>
       
       <div className="p-6">
-        <button className="flex items-center gap-4 px-4 py-3.5 rounded-xl font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all w-full">
+        <button onClick={handleLogout} className="flex items-center gap-4 px-4 py-3.5 rounded-xl font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all w-full">
           <FiLogOut className="w-5 h-5 text-red-400" />
           Logout
         </button>

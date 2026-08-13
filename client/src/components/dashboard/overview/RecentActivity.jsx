@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiFileText, FiMic, FiChevronRight } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const activities = [
   {
@@ -35,11 +36,12 @@ const activities = [
 ];
 
 const RecentActivity = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-bold text-lg text-slate-900">Recent Activity</h3>
-        <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors">
+        <button onClick={() => navigate('/dashboard/history')} className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors">
           View All History
           <span aria-hidden="true">&rarr;</span>
         </button>

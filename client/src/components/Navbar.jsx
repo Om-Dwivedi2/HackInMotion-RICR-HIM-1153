@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiSearch, FiMenu, FiX, FiBell, FiChevronDown } from 'react-icons/fi';
 import logo from "../assets/logo.png"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isDashboard = location.pathname.includes('/dashboard');
+
+  const isLinkActive = (path) => {
+    if (path === '/') return location.pathname === '/' && !location.hash;
+    if (path.startsWith('/#')) {
+      return location.pathname === '/' && location.hash === path.substring(1);
+    }
+    return location.pathname === path;
+  };
   
   // Use localStorage to determine login state. For a real app, use Context.
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,11 +41,11 @@ const Navbar = () => {
           <div className="hidden md:flex space-x-8">
             {!isLoggedIn ? (
               <>
-                <Link to="/" className="text-[var(--primary)] font-medium text-sm">Home</Link>
-                <Link to="#how-it-works" className="text-[var(--text-secondary)] hover:text-[var(--primary)] font-medium text-sm transition-colors">How It Works</Link>
-                <Link to="#features" className="text-[var(--text-secondary)] hover:text-[var(--primary)] font-medium text-sm transition-colors">Features</Link>
-                <Link to="#about" className="text-[var(--text-secondary)] hover:text-[var(--primary)] font-medium text-sm transition-colors">About</Link>
-                <Link to="#contact" className="text-[var(--text-secondary)] hover:text-[var(--primary)] font-medium text-sm transition-colors">Contact</Link>
+                <Link to="/" className={`font-medium text-sm transition-colors ${isLinkActive('/') ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'}`}>Home</Link>
+                <Link to="/#how-it-works" className={`font-medium text-sm transition-colors ${isLinkActive('/#how-it-works') ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'}`}>How It Works</Link>
+                <Link to="/#features" className={`font-medium text-sm transition-colors ${isLinkActive('/#features') ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'}`}>Features</Link>
+                <Link to="/about" className={`font-medium text-sm transition-colors ${isLinkActive('/about') ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'}`}>About Us</Link>
+                <Link to="/contact" className={`font-medium text-sm transition-colors ${isLinkActive('/contact') ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'}`}>Contact</Link>
               </>
             ) : (
               !isDashboard && (
@@ -87,13 +96,14 @@ const Navbar = () => {
           <div className="px-4 pt-2 pb-6 space-y-1">
             {!isLoggedIn ? (
               <>
-                <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-[var(--primary)] bg-[var(--primary-light)]">Home</Link>
-                <Link to="#how-it-works" className="block px-3 py-2 rounded-md text-base font-medium text-[var(--text-secondary)] hover:bg-[var(--background)]">How It Works</Link>
-                <Link to="#features" className="block px-3 py-2 rounded-md text-base font-medium text-[var(--text-secondary)] hover:bg-[var(--background)]">Features</Link>
-                <Link to="#about" className="block px-3 py-2 rounded-md text-base font-medium text-[var(--text-secondary)] hover:bg-[var(--background)]">About</Link>
+                <Link to="/" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium ${isLinkActive('/') ? 'text-[var(--primary)] bg-[var(--primary-light)]' : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'}`}>Home</Link>
+                <Link to="/#how-it-works" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium ${isLinkActive('/#how-it-works') ? 'text-[var(--primary)] bg-[var(--primary-light)]' : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'}`}>How It Works</Link>
+                <Link to="/#features" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium ${isLinkActive('/#features') ? 'text-[var(--primary)] bg-[var(--primary-light)]' : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'}`}>Features</Link>
+                <Link to="/about" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium ${isLinkActive('/about') ? 'text-[var(--primary)] bg-[var(--primary-light)]' : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'}`}>About Us</Link>
+                <Link to="/contact" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium ${isLinkActive('/contact') ? 'text-[var(--primary)] bg-[var(--primary-light)]' : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'}`}>Contact</Link>
                 <div className="mt-4 pt-4 border-t border-[var(--border)] flex flex-col space-y-3">
-                  <Link to="/login" className="block w-full text-center px-4 py-2 border border-[var(--border)] rounded-md font-medium text-[var(--text-primary)]">Sign In</Link>
-                  <Link to="/register" className="block w-full text-center px-4 py-2 bg-[var(--primary)] text-white rounded-md font-medium shadow-[var(--shadow-sm)]">Get Started</Link>
+                  <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-2 border border-[var(--border)] rounded-md font-medium text-[var(--text-primary)]">Sign In</Link>
+                  <Link to="/register" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-2 bg-[var(--primary)] text-white rounded-md font-medium shadow-[var(--shadow-sm)]">Get Started</Link>
                 </div>
               </>
             ) : (
@@ -110,6 +120,7 @@ const Navbar = () => {
                   <button className="text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-md" onClick={() => {
                     localStorage.removeItem('token');
                     setIsLoggedIn(false);
+                    navigate('/login');
                   }}>Sign Out</button>
                 </div>
               </>
