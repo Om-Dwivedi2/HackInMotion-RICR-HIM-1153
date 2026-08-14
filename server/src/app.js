@@ -11,6 +11,7 @@ import targetRoutes from "./routes/careerTarget.routes.js";
 import analysisRoutes from "./routes/analysis.routes.js";
 import interviewRoutes from "./routes/interview.routes.js";
 import historyRoutes from "./routes/history.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
 import { notFoundHandler, globalErrorHandler } from "./middlewares/error.middlewares.js";
 
 const app = express();
@@ -46,6 +47,7 @@ app.use("/api/targets", targetRoutes);
 app.use("/api/analysis", analysisRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/history", historyRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Error Handling Middlewares
 app.use(notFoundHandler);

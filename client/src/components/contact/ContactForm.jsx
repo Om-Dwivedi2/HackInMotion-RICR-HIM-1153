@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import api from '../../api/axios';
 import AuthInput from '../auth/AuthInput';
 import AuthButton from '../auth/AuthButton';
 import AuthError from '../auth/AuthError';
@@ -84,19 +85,21 @@ const ContactForm = () => {
     setIsLoading(true);
     
     try {
-      // 4. API Call Phase (PLACEHOLDER REQUIRED)
-      // TODO: Connect contact form API here
-      // const response = await contactService.sendMessage(payload);
+      const response = await api.post('/contact', payload);
       
-      // Simulating network delay to show loading state
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // We stop at the API integration boundary as requested.
-      // Do not falsely show a successful submission after clicking the button since no API exists.
-      toast('API Integration Pending', { icon: 'ℹ️' });
-      
+      if (response.data.success) {
+        toast.success('Your message has been sent successfully!');
+        // Clear form
+        setName('');
+        setEmail('');
+        setSubject('');
+        setMessage('');
+        setTouched({});
+      } else {
+        throw new Error(response.data.message || 'Failed to send message');
+      }
     } catch (err) {
-      setGlobalError(err.message || 'Unable to send your message. Please try again.');
+      setGlobalError(err.response?.data?.message || err.message || 'Unable to send your message. Please try again.');
     } finally {
       setIsLoading(false);
     }
