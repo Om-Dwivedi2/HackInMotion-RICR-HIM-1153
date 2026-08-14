@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../api/axios';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import AnalysisHeader from '../components/dashboard/analysis/AnalysisHeader';
@@ -43,14 +44,18 @@ const Analysis = () => {
   const handleReanalyze = async () => {
     setIsLoading(true);
     setError(null);
+    const toastId = toast.loading('Running resume match analysis...');
     try {
       const response = await api.post('/analysis/analyze');
       if (response.data.success && response.data.data.analysis) {
         setAnalysisData(response.data.data.analysis);
+        toast.success('Analysis updated successfully!', { id: toastId });
       }
     } catch (err) {
       console.error('Error running analysis:', err);
-      setError(err.response?.data?.message || 'Failed to run analysis. Please try again.');
+      const errorMsg = err.response?.data?.message || 'Failed to run analysis. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg, { id: toastId });
     } finally {
       setIsLoading(false);
     }

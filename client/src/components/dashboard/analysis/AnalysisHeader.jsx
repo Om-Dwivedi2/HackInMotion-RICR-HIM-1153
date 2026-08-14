@@ -1,20 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FiRefreshCw, FiFileText } from 'react-icons/fi';
-import toast from 'react-hot-toast';
 
-const AnalysisHeader = ({ analysis, onReanalyze, onViewResume }) => {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  const handleReanalyze = () => {
-    setIsAnalyzing(true);
-    const id = toast.loading('Analyzing...');
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      toast.success('Analysis refreshed successfully.', { id });
-      onReanalyze();
-    }, 1500);
-  };
-
+const AnalysisHeader = ({ analysis, onReanalyze, onViewResume, isLoading }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-6 gap-4">
       <div>
@@ -44,18 +31,21 @@ const AnalysisHeader = ({ analysis, onReanalyze, onViewResume }) => {
       {analysis && (
         <div className="flex items-center gap-3 shrink-0">
           <button 
+            type="button"
             onClick={onViewResume}
-            className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm"
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FiFileText /> View Resume
           </button>
           <button 
-            onClick={handleReanalyze}
-            disabled={isAnalyzing}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm disabled:opacity-70"
+            type="button"
+            onClick={onReanalyze}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FiRefreshCw className={isAnalyzing ? 'animate-spin' : ''} /> 
-            {isAnalyzing ? 'Analyzing...' : 'Re-analyze Resume'}
+            <FiRefreshCw className={isLoading ? 'animate-spin' : ''} /> 
+            {isLoading ? 'Analyzing...' : 'Re-analyze Resume'}
           </button>
         </div>
       )}
