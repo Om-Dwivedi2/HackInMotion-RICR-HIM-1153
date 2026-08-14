@@ -23,7 +23,10 @@ const TargetRoleCard = ({ role, company, resumeName, lastAnalyzed }) => {
       </div>
       
       <div className="flex gap-3">
-        <button className="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-slate-700 font-semibold hover:bg-gray-50 transition-colors text-sm opacity-50 cursor-not-allowed">
+        <button 
+          onClick={() => navigate('/dashboard/analysis')}
+          className="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-slate-700 font-semibold hover:bg-gray-50 transition-colors text-sm"
+        >
           View Analysis
         </button>
         <button 

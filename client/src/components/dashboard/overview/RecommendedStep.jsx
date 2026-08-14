@@ -1,7 +1,6 @@
 import React from 'react';
 import { FiTarget, FiMic } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-
 const RecommendedStep = ({ strongSkills = [], targetRole = "your target role", targetSkills = [] }) => {
   const navigate = useNavigate();
 
@@ -9,7 +8,6 @@ const RecommendedStep = ({ strongSkills = [], targetRole = "your target role", t
   const secondaryStrong = strongSkills[1] || 'experience';
   const missingFirst = targetSkills[0]?.skill || 'specific tools';
   const missingSecond = targetSkills[1]?.skill || 'domain knowledge';
-
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
       <div className="flex items-center gap-3 mb-4">

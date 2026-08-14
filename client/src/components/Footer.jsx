@@ -28,10 +28,10 @@ const Footer = () => {
           <div className="md:col-span-1">
             <h3 className="font-semibold text-[var(--text-primary)] mb-4">Product</h3>
             <ul className="space-y-3">
-              <li><Link to="/dashboard" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Resume Analyzer</Link></li>
-              <li><Link to="/dashboard" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Skill Gap Analysis</Link></li>
-              <li><Link to="/dashboard" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Mock Interview</Link></li>
-              <li><Link to="/dashboard" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Progress Tracking</Link></li>
+              <li><Link to="/dashboard/resume" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Resume Analyzer</Link></li>
+              <li><Link to="/dashboard/analysis" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Skill Gap Analysis</Link></li>
+              <li><Link to="/dashboard/interview" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Mock Interview</Link></li>
+              <li><Link to="/dashboard/history" className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-sm transition-colors">Progress Tracking</Link></li>
             </ul>
           </div>
 
