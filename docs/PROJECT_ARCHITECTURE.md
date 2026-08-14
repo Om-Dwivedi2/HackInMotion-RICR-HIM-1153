@@ -1,165 +1,111 @@
-# CareerLens Project Architecture
+# CareerLens — Project Architecture
 
-## 1. Project Overview
+## 1. Overview
 
-CareerLens is a full-stack career-readiness web platform that helps candidates evaluate and optimize their resumes for targeted job roles. The system enables users to upload resumes in multiple document formats, define target career positions and job descriptions, generate deterministic and AI-powered match analysis with actionable recommendations, and practice simulated mock interviews with automated grading.
+CareerLens is a full-stack career-readiness web application designed to help job seekers evaluate and optimize their resumes against targeted job descriptions. Its primary purpose is to provide users with a clear understanding of their resume's strengths and weaknesses through a combination of deterministic scoring and AI-powered feedback. 
 
-## 2. Repository Structure
+Major system responsibilities include:
+- Parsing resumes from uploaded PDF and DOCX files.
+- Managing user profiles, active resumes, and active career targets.
+- Analyzing resumes against job descriptions to produce actionable insights and match scores.
+- Generating and grading simulated mock interviews based on the user's profile and targeted role.
 
-The project is organized as a decoupled client-server repository:
+The application uses a decoupled architecture where the React-based frontend communicates with a Node.js/Express backend via a REST API. The backend orchestrates interactions with a MongoDB database for persistence and interfaces with an external AI service (via OpenRouter) to extract structured data and generate generative insights.
 
-```text
-HackInMotion-RICR-HIM-1153/
-├── client/          # Frontend React SPA with Vite & Tailwind CSS
-├── server/          # Backend REST API with Express & Mongoose
-├── docs/            # Engineering & architecture documentation
-└── README.md        # Project setup and overview guide
+## 2. Architecture Overview
+
+CareerLens follows a traditional client-server architecture with a distinct separation of concerns between the presentation layer (Frontend), business logic layer (Backend), persistence layer (Database), and external intelligence layer (AI Service).
+
+```mermaid
+flowchart TD
+    User([User]) --> Frontend
+    
+    subgraph Client [Frontend (React + Vite)]
+        Router[React Router]
+        Pages[UI Pages & Components]
+        AuthContext[Auth Context]
+        Axios[API Client / Axios]
+        
+        Router --> Pages
+        Pages --> AuthContext
+        Pages --> Axios
+    end
+    
+    subgraph Server [Backend (Node + Express)]
+        App[Express App]
+        Middlewares[Auth & Error Middlewares]
+        Routes[API Routes]
+        Controllers[Controllers]
+        Services[Business & AI Services]
+        
+        App --> Middlewares
+        Middlewares --> Routes
+        Routes --> Controllers
+        Controllers --> Services
+    end
+    
+    subgraph Data [Persistence]
+        MongoDB[(MongoDB)]
+        LocalFileSystem[Local File System /uploads]
+    end
+    
+    subgraph External [External Services]
+        AIService[OpenRouter AI API]
+    end
+    
+    Frontend <--> |REST HTTP/JSON| Server
+    Axios --> App
+    
+    Services <--> |Mongoose ODM| MongoDB
+    Services <--> |REST API| AIService
+    Controllers --> LocalFileSystem
 ```
-
-- **`client/`**: Handles user interface, client-side routing, presentation state, and interactive workflows.
-- **`server/`**: Manages business logic, document parsing, deterministic scoring, AI orchestration, database persistence, and session security.
-- **`docs/`**: Central repository for system design, workflows, and architectural guides.
 
 ## 3. Frontend Architecture
 
-The frontend is built with **React 19** and bundled using **Vite**.
+The frontend is a Single Page Application (SPA) built with **React 19**, bundled by **Vite**, and styled with **Tailwind CSS**.
 
-- **Routing (`src/App.jsx`)**: Uses `react-router-dom` (v7) to define public landing and authentication routes (`Home.jsx`, `Login.jsx`, `Register.jsx`, `Contact.jsx`) and authenticated dashboard subroutes protected by `ProtectedRoute.jsx`.
-- **Views (`src/pages/`)**: Domain views including `Dashboard.jsx`, `Resume.jsx`, `Analysis.jsx`, `MockInterview.jsx`, `History.jsx`, and `Settings.jsx`.
-- **Component System (`src/components/`)**:
-  - `auth/`: Login/register inputs and route protectors.
-  - `dashboard/`: Feature-grouped UI for overview metrics, resume upload/preview, career target forms, analysis visualizers, mock interviews, and history timelines.
-  - `home/` & layout: Navbar, footer, hero, and value sections.
-- **Global Context (`src/context/AuthContext.jsx`)**: Manages session state (`user`, `login`, `register`, `logout`, `checkAuth`) and provides the `useAuth()` hook.
-- **API Client (`src/api/axios.js`)**: Configured Axios instance with `withCredentials: true` and base URL targeting `/api`.
+- **Routing:** Handled by `react-router-dom` (v7). Routes are split between public endpoints (`/login`, `/register`, `/contact`) and protected dashboard endpoints (`/dashboard/*`) wrapped in a `ProtectedRoute` component.
+- **State Management:** Core session and user state are managed globally via a React Context (`AuthContext`). Other UI states (loading, forms) are managed locally within components.
+- **API Communication:** An `axios` instance (`src/api/axios.js`) is configured with `withCredentials: true` to automatically pass HTTP-only cookies to the backend.
+- **Component Hierarchy:**
+  - `src/pages/`: Contains the main view components (e.g., `Home`, `Dashboard`, `Resume`, `Analysis`, `MockInterview`).
+  - `src/components/`: Contains reusable UI building blocks grouped by feature (e.g., `auth/`, `dashboard/`).
+- **Styling:** Vanilla CSS (`index.css`) paired heavily with Tailwind CSS utility classes.
 
 ## 4. Backend Architecture
 
-The backend is built with **Node.js** and **Express 5**, connecting to **MongoDB** via **Mongoose**.
+The backend is a RESTful API built on **Node.js** and **Express 5**, using **Mongoose** for data modeling.
 
-- **Entry Point (`src/index.js` & `src/app.js`)**: Boots Express, registers CORS with credentials, cookie parser, JSON body parser, request logging (`morgan`), static file serving (`/uploads`), and routes.
-- **Routes (`src/routes/`)**: Modular endpoints for `auth.routes.js`, `user.routes.js`, `resume.routes.js`, `careerTarget.routes.js`, `analysis.routes.js`, `interview.routes.js`, `history.routes.js`, and `health.routes.js`.
-- **Controllers (`src/controllers/`)**: Business orchestration handlers extracting request parameters, invoking services, and sending standardized JSON responses.
-- **Middleware (`src/middlewares/`)**:
-  - `auth.middlewares.js`: `protect` middleware verifying the HTTP-only JWT cookie (`careerlens_token`).
-  - `error.middlewares.js`: `notFoundHandler` for 404s and `globalErrorHandler` for formatting error responses.
-- **Services (`src/services/`)**:
-  - `ai.service.js`: OpenRouter client executing structured prompts for resume parsing, JD requirement extraction, analysis explanations, and interview simulation/grading.
-  - `analysis.service.js`: Deterministic keyword, skill, and score calculation engine.
-  - `auth.services.js`: User authentication and credential validation logic.
-- **Models (`src/modules/`)**: Mongoose schemas for `User`, `Resume`, `CareerTarget`, `Analysis`, and `Interview`.
+- **Entry Point:** The application initializes via `src/app.js` where global middlewares (CORS, Cookie Parser, JSON Parser, Error Handlers) and route modules are mounted.
+- **Routing Layer (`src/routes/`):** Endpoint definitions are grouped logically (e.g., `auth`, `resume`, `analysis`, `targets`, `interviews`, `history`).
+- **Controller Layer (`src/controllers/`):** Handles incoming HTTP requests, orchestrates business logic by calling services, and formats standard JSON responses.
+- **Service Layer (`src/services/`):**
+  - **`ai.service.js`:** An AI Gateway that interfaces with the OpenRouter API. It handles structuring parsed resume/job text and generating analysis recommendations and interview questions.
+  - **`analysis.service.js`:** Contains deterministic algorithms for keyword matching and score calculation (avoiding non-deterministic AI score hallucination).
+  - **`auth.services.js`:** Handles password hashing and user credential verification.
+- **Persistence (`src/modules/` or models):** Mongoose schemas define the shape of `User`, `Resume`, `CareerTarget`, `Analysis`, and `Interview` collections.
+- **File Storage:** Uploaded resumes (PDF/DOCX) are temporarily saved to a local `uploads/` directory using `multer` before being parsed by `pdf-parse` or `mammoth`.
 
-## 5. Authentication Flow
+## 5. Data Flow: Career Analysis
 
-Authentication uses JSON Web Tokens (JWT) stored in HTTP-only cookies:
+A core feature of the system is the Resume-to-Job analysis workflow.
 
-```text
-User (Login/Register)
-       ↓
-AuthContext (Axios POST /api/auth/login or /api/auth/register)
-       ↓
-auth.controllers.js (Validates credentials with bcrypt & signs JWT)
-       ↓
-HTTP-only Cookie (`careerlens_token`) set in response
-       ↓
-Protected Request (Cookie automatically sent via withCredentials)
-       ↓
-auth.middlewares.js (`protect` validates JWT & attaches req.user)
-       ↓
-Target Controller executes
-```
+1. **Upload & Parse:** User uploads a resume. The backend saves the file locally and extracts raw text.
+2. **Structure:** The backend sends the raw text to the `ai.service.js` to return a structured JSON representation of the user's experience and skills.
+3. **Target Setting:** User inputs a target role and Job Description. The backend extracts required skills/keywords via the AI service.
+4. **Analysis:** When triggered, the `analysis.controllers.js`:
+   - Calculates a deterministic match score by comparing structured resume data against structured job requirements (`analysis.service.js`).
+   - Requests qualitative feedback and recommendations from the AI (`ai.service.js`).
+   - Aggregates the score and qualitative feedback into an `Analysis` record and saves it to MongoDB.
+5. **Presentation:** The frontend fetches the analysis record and renders the score gauge, skill gaps, and recommendations.
 
-## 6. Resume Workflow
+## 6. Authentication and Security
 
-Resume processing combines local document parsing and LLM data extraction:
-
-```text
-User uploads PDF/DOCX in ResumeUploadCard.jsx
-       ↓
-POST /api/resumes (Multer stores file in /uploads & creates Resume record)
-       ↓
-pdf-parse / mammoth extracts raw text into Resume.extractedText
-       ↓
-POST /api/resumes/structure (Invokes parseResumeText in ai.service.js)
-       ↓
-AI structures raw text into typed JSON (skills, experience, education, projects)
-       ↓
-Structured data saved in Resume.parsedData for analysis
-```
-
-## 7. Career Analysis Workflow
-
-Analysis pairs deterministic computation with AI explanation:
-
-```text
-User submits target role & JD in CareerTargetForm.jsx
-       ↓
-POST /api/targets (Saves CareerTarget) & POST /api/targets/structure (Extracts requirements)
-       ↓
-User triggers POST /api/analysis/analyze
-       ↓
-calculateDeterministicScore (Matches candidate skills/keywords against JD requirements)
-       ↓
-generateAnalysisExplanation (AI generates contextual recommendations without altering score)
-       ↓
-Analysis record created with match score, skill breakdown, strengths, gaps, and advice
-       ↓
-Analysis.jsx renders summary cards, score gauges, breakdowns, and recommendations
-```
-
-## 8. Data Flow
-
-```text
-React Client (Pages / Components)
-       ↓ (HTTP REST / JSON / FormData via Axios)
-Express Routes & Auth Middleware
-       ↓
-Controllers
-       ├──→ Deterministic Logic (analysis.service.js)
-       ├──→ AI Gateway (ai.service.js → OpenRouter API)
-       └──→ Database Layer (Mongoose Models → MongoDB)
-       ↓
-Standardized Response ({ success, data, message })
-       ↓
-React State Update & Visual Feedback (Toast / Recharts)
-```
-
-## 9. Environment Configuration
-
-The backend relies on the following environment variables (configured in `server/.env`):
-
-- `NODE_ENV`: Runtime mode (`development` or `production`).
-- `PORT`: HTTP port for the Express server (default `5000`).
-- `MONGO_URI`: MongoDB connection string.
-- `CLIENT_URL`: Client origin for CORS authorization (default `http://localhost:5173`).
-- `JWT_SECRET`: Secret key used for signing and verifying authentication tokens.
-- `JWT_EXPIRES_IN`: Expiration duration for tokens (default `7d`).
-- `OPENROUTER_API_KEY`: API authentication key for OpenRouter LLM requests.
-- `OPENROUTER_MODEL`: Target model identifier for AI operations.
-- `OPENROUTER_SITE_URL`: Optional application URL sent in OpenRouter request headers.
-- `OPENROUTER_SITE_NAME`: Application display name for OpenRouter rankings.
-
-*Note: Frontend environment variables use the `VITE_` prefix (e.g., `VITE_API_URL`).*
-
-## 10. Error Handling
-
-- **Backend**:
-  - Operational errors are instantiated using `AppError` with explicit HTTP status codes.
-  - Asynchronous controller errors are passed to Express `next(error)`.
-  - Global `error.middlewares.js` catches uncaught errors and standardizes the response format `{ success: false, message, data: null }`.
-- **Frontend**:
-  - API calls utilize `try...catch` blocks.
-  - User feedback is displayed via `react-hot-toast` notifications and contextual error state banners.
-
-## 11. Current Architecture Notes
-
-- **Hybrid Scoring**: Match scoring uses deterministic algorithms rather than non-deterministic LLM score guessing, ensuring reproducible scores while leveraging AI for explanations.
-- **Session Security**: Authentication tokens are stored in secure HTTP-only cookies, eliminating local storage token theft risks.
-- **Scoped Single Active Records**: Users maintain one active resume and career target at a time (`isActive: true`), simplifying comparative analysis.
-
-## 12. Future Extension Points
-
-- **Multi-Resume Management**: Supporting side-by-side comparison across multiple customized resumes per role.
-- **Real-Time Voice Mock Interviews**: Integrating speech-to-text and audio streaming APIs for interactive verbal interview practice.
-- **Cloud File Storage**: Migrating local file uploads (`/uploads`) to cloud object storage (e.g., AWS S3, Cloudinary).
-- **Background Job Queues**: Offloading heavy AI analysis and parsing to worker queues (e.g., BullMQ with Redis) for enhanced concurrency.
+- **Mechanism:** JWT (JSON Web Tokens) paired with HTTP-only cookies.
+- **Flow:**
+  1. User authenticates via `/api/auth/login`.
+  2. The server signs a JWT and attaches it to the response as an HTTP-only cookie (`careerlens_token`).
+  3. Subsequent requests from the frontend automatically include this cookie.
+  4. The `protect` middleware on the server validates the JWT signature and attaches the verified user to the request object (`req.user`) before allowing access to protected routes.
+- **Configuration:** Environment variables (`server/.env`) dictate the `JWT_SECRET`, client origin for CORS, and MongoDB URI.
