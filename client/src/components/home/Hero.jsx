@@ -4,7 +4,7 @@ import { FiCheck, FiX, FiAlertTriangle, FiArrowRight } from 'react-icons/fi';
 
 const Hero = () => {
   return (
-    <section className="pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden relative">
+    <section id="home" className="pt-16 pb-12 lg:pt-12 lg:pb-12 overflow-hidden relative min-h-[calc(100vh-80px)] flex items-center">
       <div className="max-w-[var(--container-width)] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
 
@@ -28,10 +28,10 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Link to="/dashboard" className="inline-flex justify-center items-center gap-2 bg-[var(--primary)] text-white px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-[var(--shadow-md)]">
+              <Link to="/dashboard/resume" className="inline-flex justify-center items-center gap-2 bg-[var(--primary)] text-white px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-[var(--shadow-md)]">
                 Analyze My Resume
               </Link>
-              <Link to="/dashboard" className="inline-flex justify-center items-center gap-2 bg-white text-[var(--text-primary)] border border-[var(--border)] px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--background)] transition-all shadow-[var(--shadow-sm)]">
+              <Link to="/dashboard/interview" className="inline-flex justify-center items-center gap-2 bg-white text-[var(--text-primary)] border border-[var(--border)] px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--background)] transition-all shadow-[var(--shadow-sm)]">
                 Try Mock Interview
               </Link>
             </div>
@@ -126,7 +126,7 @@ const Hero = () => {
                     <p className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-wider mb-1">Recommended Next Step</p>
                     <p className="text-sm font-semibold text-[var(--text-primary)]">Practice role-specific questions</p>
                   </div>
-                  <Link to="/dashboard" className="shrink-0 bg-[var(--primary)] text-white font-medium text-xs px-4 py-2 rounded-md hover:bg-[var(--primary-hover)] transition-all flex items-center gap-1.5 shadow-sm">
+                  <Link to="/dashboard/interview" className="shrink-0 bg-[var(--primary)] text-white font-medium text-xs px-4 py-2 rounded-md hover:bg-[var(--primary-hover)] transition-all flex items-center gap-1.5 shadow-sm">
                     Start Mock Interview <FiArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

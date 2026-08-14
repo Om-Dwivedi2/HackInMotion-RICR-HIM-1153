@@ -20,8 +20,8 @@ const FinalCTA = () => {
               Upload your resume, choose your target role, and find out what it takes to become interview ready.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link to="/dashboard" className="inline-flex justify-center items-center gap-2 bg-[var(--primary)] text-white px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-[var(--shadow-md)]">
-                Start Your Career Analysis <FiArrowRight />
+              <Link to="/dashboard/resume" className="inline-flex justify-center items-center gap-2 bg-[var(--primary)] text-white px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-[var(--shadow-md)]">
+                Start Your Career Analysis
               </Link>
               <Link to="/about" className="inline-flex justify-center items-center gap-2 bg-[var(--surface)] text-[var(--text-primary)] border border-[var(--border)] px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--background)] transition-all shadow-[var(--shadow-sm)]">
                 Explore CareerLens

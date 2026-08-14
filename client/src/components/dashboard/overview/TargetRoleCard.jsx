@@ -1,7 +1,9 @@
 import React from 'react';
 import { FiBriefcase } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const TargetRoleCard = ({ role, resumeName, lastAnalyzed }) => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex-1 min-w-[350px]">
       <div className="flex items-start justify-between mb-4">
@@ -20,10 +22,10 @@ const TargetRoleCard = ({ role, resumeName, lastAnalyzed }) => {
       </div>
       
       <div className="flex gap-3">
-        <button className="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-slate-700 font-semibold hover:bg-gray-50 transition-colors text-sm">
+        <button onClick={() => navigate('/dashboard/analysis')} className="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-slate-700 font-semibold hover:bg-gray-50 transition-colors text-sm">
           View Analysis
         </button>
-        <button className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors text-sm">
+        <button onClick={() => navigate('/dashboard/resume')} className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors text-sm">
           Change Target
         </button>
       </div>

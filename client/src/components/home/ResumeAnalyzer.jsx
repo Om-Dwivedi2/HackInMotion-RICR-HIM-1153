@@ -56,8 +56,8 @@ const ResumeAnalyzer = () => {
               ))}
             </div>
 
-            <Link to="/dashboard" className="inline-flex items-center gap-2 bg-[var(--primary)] text-white px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-[var(--shadow-md)]">
-              Analyze Your Resume <FiArrowRight />
+            <Link to="/dashboard/resume" className="inline-flex items-center gap-2 bg-[var(--primary)] text-white px-8 py-3.5 rounded-[var(--radius-md)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-[var(--shadow-md)]">
+              Analyze Your Resume <FiArrowRight className="ml-1" />
             </Link>
           </div>
 
