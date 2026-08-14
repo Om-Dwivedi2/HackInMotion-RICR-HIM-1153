@@ -5,6 +5,9 @@ import cookieParser from "cookie-parser";
 import { envConfig } from "./config/env.config.js";
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import resumeRoutes from "./routes/resume.routes.js";
+import targetRoutes from "./routes/careerTarget.routes.js";
 import { notFoundHandler, globalErrorHandler } from "./middlewares/error.middlewares.js";
 
 const app = express();
@@ -24,9 +27,19 @@ if (envConfig.nodeEnv === "development") {
 app.use(cookieParser());
 app.use(express.json({ limit: "1mb" }));
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Routes
+app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/resumes", resumeRoutes);
+app.use("/api/targets", targetRoutes);
 
 // Error Handling Middlewares
 app.use(notFoundHandler);

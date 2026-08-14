@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import api from '../../api/axios';
 
 const EditPreferencesModal = ({ isOpen, onClose, preferences, onUpdate }) => {
   const [targetRole, setTargetRole] = useState(preferences?.targetRole || 'Backend Engineer');
@@ -13,15 +14,16 @@ const EditPreferencesModal = ({ isOpen, onClose, preferences, onUpdate }) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // API integration placeholder
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Preferences updated successfully');
-      if (onUpdate) {
-        onUpdate({ targetRole, experienceLevel });
+      const response = await api.put('/targets', { role: targetRole });
+      if (response.data.success) {
+        toast.success('Preferences updated successfully');
+        if (onUpdate) {
+          onUpdate({ targetRole, experienceLevel });
+        }
+        onClose();
       }
-      onClose();
     } catch (err) {
-      toast.error('Failed to update preferences');
+      toast.error(err.response?.data?.message || 'Failed to update preferences');
     } finally {
       setIsLoading(false);
     }

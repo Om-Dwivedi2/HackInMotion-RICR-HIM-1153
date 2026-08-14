@@ -7,6 +7,7 @@ import AuthInput from '../components/auth/AuthInput';
 import PasswordInput from '../components/auth/PasswordInput';
 import AuthButton from '../components/auth/AuthButton';
 import AuthError from '../components/auth/AuthError';
+import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -61,6 +62,8 @@ const Register = () => {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
 
+  const { register: registerUser } = useAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGlobalError('');
@@ -82,31 +85,18 @@ const Register = () => {
 
     if (hasError) return;
 
-    // 3. Payload Creation Phase
-    const payload = {
-      name: name.trim(),
-      email: email.trim(),
-      password: password
-    };
-
     setIsLoading(true);
 
     try {
-      // 4. API Call Phase (PLACEHOLDER REQUIRED)
-      // TODO: Connect registration API here
-      // const response = await authService.register(payload);
+      // 4. API Call Phase
+      const success = await registerUser(name.trim(), email.trim(), password);
 
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Simulate API failure for testing
-      if (payload.email === 'error@example.com') {
-        throw new Error('Email already registered.');
+      if (success) {
+        // Since backend already logs them in (JWT cookie), we can navigate to dashboard directly
+        // Or if backend requires login separately, we navigate to /login.
+        // In Phase 3, register sets JWT cookie.
+        navigate('/dashboard');
       }
-
-      // 5. Success Flow
-      toast.success('Account created successfully.');
-      navigate('/login');
     } catch (error) {
       // 6. API Error Handling
       setGlobalError(error.message || 'Unable to create account. Please try again.');

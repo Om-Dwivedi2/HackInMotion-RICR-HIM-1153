@@ -1,13 +1,15 @@
 import React from 'react';
 
-const ResumePreview = () => {
+const ResumePreview = ({ fileUrl }) => {
   return (
     <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden h-[600px] flex flex-col">
       <div className="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
         <h3 className="font-semibold text-slate-800">Resume Preview</h3>
       </div>
       
-      {/* Fake resume document */}
+      {fileUrl ? (
+        <iframe src={fileUrl} className="w-full h-full border-none" title="Resume Preview" />
+      ) : (
       <div className="flex-1 overflow-y-auto p-8 bg-slate-50">
         <div className="max-w-[21cm] mx-auto bg-white min-h-[29.7cm] shadow-sm border border-slate-200 p-10 font-serif">
           
@@ -68,6 +70,7 @@ const ResumePreview = () => {
           
         </div>
       </div>
+      )}
     </div>
   );
 };

@@ -64,3 +64,23 @@ export const getUserById = async (userId) => {
   }
   return user; // Safe user will be handled in controller/middleware
 };
+
+export const changePassword = async (userId, currentPassword, newPassword) => {
+  const user = await User.findById(userId).select("+password");
+  if (!user) {
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+  if (!isPasswordValid) {
+    const error = new Error("Current password is incorrect");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  user.password = await hashPassword(newPassword);
+  await user.save();
+  return getSafeUser(user);
+};

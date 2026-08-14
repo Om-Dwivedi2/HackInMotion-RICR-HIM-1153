@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import ResumeHeader from '../components/dashboard/resume/ResumeHeader';
 import ResumeUploadCard from '../components/dashboard/resume/ResumeUploadCard';
@@ -28,18 +29,47 @@ const mockDetails = {
 };
 
 const Resume = () => {
-  // Toggle this for testing empty vs uploaded state
   const [hasResume, setHasResume] = useState(false);
+  const [activeResume, setActiveResume] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isReplaceModalOpen, setIsReplaceModalOpen] = useState(false);
   
   const navigate = useNavigate();
 
+  useEffect(() => {
+    fetchActiveResume();
+  }, []);
+
+  const fetchActiveResume = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get('/resumes/active');
+      if (response.data.success && response.data.data) {
+        setHasResume(true);
+        const rd = response.data.data;
+        setActiveResume({
+          fileName: rd.file.originalName,
+          fileType: rd.file.fileType.includes('pdf') ? 'PDF' : 'DOC',
+          fileSize: (rd.file.fileSize / 1024 / 1024).toFixed(2) + ' MB',
+          uploadedAt: new Date(rd.uploadedAt).toLocaleDateString(),
+          lastAnalyzed: rd.parsedData ? new Date(rd.updatedAt).toLocaleDateString() : 'Not analyzed yet',
+          status: rd.parsedData ? "Analyzed" : "Ready for Analysis",
+          targetRole: "Backend Engineer", // Still hardcoded without Career Target Phase
+          fileUrl: rd.file.fileUrl
+        });
+      }
+    } catch (error) {
+      setHasResume(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleUploadSuccess = () => {
-    setHasResume(true);
+    fetchActiveResume();
   };
 
   const handleAnalyze = () => {
-    // Navigate to the analysis page as requested
     navigate('/dashboard/analysis');
   };
 
@@ -59,14 +89,14 @@ const Resume = () => {
         ) : (
           <div className="flex flex-col gap-6 pb-12">
             <ResumeOverview 
-              resume={mockResume} 
+              resume={activeResume || mockResume} 
               onView={() => console.log('View full screen resume')}
               onReplace={() => setIsReplaceModalOpen(true)}
             />
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <ResumePreview />
+                <ResumePreview fileUrl={activeResume?.fileUrl} />
               </div>
               <div className="lg:col-span-1">
                 <ResumeDetails details={mockDetails} />

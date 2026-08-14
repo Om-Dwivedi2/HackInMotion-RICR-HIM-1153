@@ -6,6 +6,7 @@ import AuthInput from '../components/auth/AuthInput';
 import PasswordInput from '../components/auth/PasswordInput';
 import AuthButton from '../components/auth/AuthButton';
 import AuthError from '../components/auth/AuthError';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,6 +36,8 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const { login } = useAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGlobalError('');
@@ -42,35 +45,18 @@ const Login = () => {
     // 2. Validation Phase (BEFORE API CALL)
     if (!validate()) return;
 
-    // 3. Payload Creation Phase
-    const payload = {
-      email: email.trim(),
-      password: password
-    };
-
     setIsLoading(true);
 
     try {
-      // 4. API Call Phase (PLACEHOLDER REQUIRED)
-      // TODO: Call login API here
-      // const response = await authService.login(payload);
+      // 4. API Call Phase
+      const success = await login(email.trim(), password);
 
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Simulate failure on a specific dummy email for testing
-      if (payload.email === 'error@example.com') {
-        throw new Error('Invalid credentials');
+      if (success) {
+        navigate('/dashboard');
       }
-
-      // 5. Success Flow
-      // Store auth state (e.g. localStorage, context)
-      localStorage.setItem('token', 'dummy-token');
-
-      navigate('/dashboard');
     } catch (error) {
       // 6. Failure Flow
-      setGlobalError('Invalid email or password.');
+      setGlobalError(error.message || 'Invalid email or password.');
     } finally {
       setIsLoading(false);
     }

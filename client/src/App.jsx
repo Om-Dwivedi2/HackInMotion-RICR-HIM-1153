@@ -15,6 +15,7 @@ import Contact from './pages/Contact'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 
 const AppContent = () => {
   const location = useLocation();
@@ -32,12 +33,12 @@ const AppContent = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/resume" element={<Resume />} />
-          <Route path="/dashboard/analysis" element={<Analysis />} />
-          <Route path="/dashboard/interview" element={<MockInterview />} />
-          <Route path="/dashboard/history" element={<History />} />
-          <Route path="/dashboard/settings" element={<Settings />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard/resume" element={<ProtectedRoute><Resume /></ProtectedRoute>} />
+          <Route path="/dashboard/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
+          <Route path="/dashboard/interview" element={<ProtectedRoute><MockInterview /></ProtectedRoute>} />
+          <Route path="/dashboard/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+          <Route path="/dashboard/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
           <Route path="/contact" element={<Contact />} />
         </Routes>
