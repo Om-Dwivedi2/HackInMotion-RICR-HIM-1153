@@ -64,11 +64,7 @@ const ResumeUploadCard = ({ onUploadSuccess }) => {
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await api.post('/resumes', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await api.post('/resumes', formData);
       
       if (response.data.success) {
         toast.success('Resume uploaded successfully.');

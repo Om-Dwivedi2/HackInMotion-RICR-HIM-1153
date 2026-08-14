@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ResumeHeader = ({ hasResume, onAnalyze, onReplace }) => {
+const ResumeHeader = ({ hasResume, onAnalyze, onReplace, isProcessing }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
       <div>
@@ -9,22 +9,24 @@ const ResumeHeader = ({ hasResume, onAnalyze, onReplace }) => {
           Manage your resume and keep it ready for your next career opportunity.
         </p>
       </div>
-      {hasResume && (
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={onReplace}
-            className="px-4 py-2 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors cursor-pointer"
-          >
-            Replace Resume
-          </button>
-          <button 
-            onClick={onAnalyze}
-            className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors cursor-pointer"
-          >
-            Analyze Resume
-          </button>
-        </div>
-      )}
+    {hasResume && (
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={onReplace}
+          disabled={isProcessing}
+          className="px-4 py-2 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Replace Resume
+        </button>
+        <button 
+          onClick={onAnalyze}
+          disabled={isProcessing}
+          className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isProcessing ? 'Processing...' : 'Analyze Resume'}
+        </button>
+      </div>
+    )}
     </div>
   );
 };
