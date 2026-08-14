@@ -4,13 +4,10 @@ import logo from '../../assets/logo.png';
 
 const AuthLayout = ({ children }) => {
   return (
-    <div className="min-h-screen w-full flex bg-[var(--surface)] fixed inset-0 z-50">
+    <div className="w-full flex flex-col lg:flex-row min-h-[calc(100vh-160px)] bg-[var(--surface)]">
       {/* Left Branding Panel */}
       <div className="hidden lg:flex w-1/2 bg-[var(--primary-light)] flex-col justify-between p-12 relative overflow-hidden border-r border-[var(--border)]">
         <div className="relative z-10">
-          <Link to="/" className="inline-block mb-16 hover:opacity-80 transition-opacity">
-            <img src={logo} alt="CareerLens Logo" className="h-14 w-auto object-contain" />
-          </Link>
           <h1 className="text-4xl xl:text-5xl font-bold text-[var(--text-primary)] mb-6 leading-tight tracking-tight">
             Prepare smarter.<br />
             <span className="text-[var(--primary)]">Get hired with confidence.</span>
@@ -65,13 +62,6 @@ const AuthLayout = ({ children }) => {
       {/* Right Form Panel */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 bg-white overflow-y-auto">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="lg:hidden mb-10 flex justify-center">
-            <Link to="/">
-              <img src={logo} alt="CareerLens Logo" className="h-12 w-auto object-contain" />
-            </Link>
-          </div>
-          
           {children}
           
         </div>
