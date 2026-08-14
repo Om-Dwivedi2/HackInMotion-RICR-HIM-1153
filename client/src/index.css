@@ -1,1 +1,99 @@
 @import "tailwindcss";
+
+:root {
+  /* Brand */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+
+  /* Background */
+  --background: #fbfcfd;
+  --surface: #ffffff;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+
+  /* Border */
+  --border: #e2e8f0;
+
+  /* Status */
+  --success: #10b981;
+  --success-light: #ecfdf5;
+
+  --warning: #f59e0b;
+  --warning-light: #fffbeb;
+
+  --danger: #ef4444;
+  --danger-light: #fef2f2;
+
+  /* AI */
+  --ai: #7c3aed;
+  --ai-light: #f5f3ff;
+
+  /* Typography */
+  --font-main: "Inter", sans-serif;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+  /* Layout */
+  --container-width: 1200px;
+}
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+
+  --color-background-main: var(--background);
+  --color-surface: var(--surface);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-border-custom: var(--border);
+
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+
+  --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
+
+  --color-ai: var(--ai);
+  --color-ai-light: var(--ai-light);
+
+  --font-main: var(--font-main);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-full: var(--radius-full);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+
+  --width-container: var(--container-width);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--background);
+  color: var(--text-primary);
+}

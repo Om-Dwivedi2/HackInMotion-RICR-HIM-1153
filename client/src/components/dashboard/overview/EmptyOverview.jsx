@@ -1,7 +1,9 @@
 import React from 'react';
 import { FiUploadCloud, FiTarget, FiBarChart2 } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const EmptyOverview = () => {
+  const navigate = useNavigate();
   return (
     <div className="max-w-4xl mx-auto py-8">
       <div className="text-center mb-12">
@@ -11,7 +13,7 @@ const EmptyOverview = () => {
         <p className="text-lg text-slate-600 max-w-xl mx-auto">
           Let's get your career readiness journey started. Upload your resume and add a target job to receive your personalized career analysis.
         </p>
-        <button className="mt-8 bg-blue-600 text-white font-semibold py-3 px-8 rounded-xl shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto">
+        <button onClick={() => navigate('/dashboard/resume')} className="mt-8 bg-blue-600 text-white font-semibold py-3 px-8 rounded-xl shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto">
           <FiUploadCloud className="w-5 h-5" />
           Upload My Resume
         </button>
