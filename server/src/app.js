@@ -8,6 +8,9 @@ import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import resumeRoutes from "./routes/resume.routes.js";
 import targetRoutes from "./routes/careerTarget.routes.js";
+import analysisRoutes from "./routes/analysis.routes.js";
+import interviewRoutes from "./routes/interview.routes.js";
+import historyRoutes from "./routes/history.routes.js";
 import { notFoundHandler, globalErrorHandler } from "./middlewares/error.middlewares.js";
 
 const app = express();
@@ -34,12 +37,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Routes
-app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/targets", targetRoutes);
+app.use("/api/analysis", analysisRoutes);
+app.use("/api/interviews", interviewRoutes);
+app.use("/api/history", historyRoutes);
 
 // Error Handling Middlewares
 app.use(notFoundHandler);

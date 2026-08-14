@@ -23,7 +23,8 @@ export const protect = async (req, res, next) => {
       });
     }
 
-    if (!payload || !payload.sub) {
+    const userId = payload.sub || payload.userId;
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired authentication token",
@@ -31,7 +32,7 @@ export const protect = async (req, res, next) => {
       });
     }
 
-    const user = await getUserById(payload.sub);
+    const user = await getUserById(userId);
     req.user = user;
     next();
   } catch (error) {

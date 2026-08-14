@@ -94,6 +94,7 @@ const resumeSchema = new mongoose.Schema(
       type: fileSchema,
       required: true,
     },
+    extractedText: String,
     parsedData: parsedDataSchema,
     isActive: {
       type: Boolean,
