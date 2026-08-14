@@ -41,7 +41,7 @@ const CareerJourney = () => {
   ];
 
   return (
-    <section className="py-24 bg-[var(--background)]">
+    <section id="how-it-works" className="py-24 bg-[var(--background)]">
       <div className="max-w-[var(--container-width)] mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4 tracking-tight">
           From Resume to Interview-Ready

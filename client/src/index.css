@@ -88,6 +88,10 @@
   --width-container: var(--container-width);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--background);

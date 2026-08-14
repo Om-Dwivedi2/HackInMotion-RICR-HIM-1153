@@ -50,8 +50,8 @@ const WhyCareerLens = () => {
               <p className="text-sm text-[var(--text-secondary)] mb-8 leading-relaxed font-medium">
                 Get honest feedback, actionable insights, and personalized practice to help you land the role you want.
               </p>
-              <Link to="/dashboard" className="inline-flex items-center gap-2 bg-[var(--primary)] text-white px-6 py-3 rounded-[var(--radius-sm)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-md text-sm">
-                Start Your Journey <FiArrowRight />
+              <Link to="/dashboard/resume" className="inline-flex items-center gap-2 bg-[var(--primary)] text-white px-6 py-3 rounded-[var(--radius-sm)] font-medium hover:bg-[var(--primary-hover)] transition-all shadow-md text-sm">
+                Start Your Journey
               </Link>
             </div>
             

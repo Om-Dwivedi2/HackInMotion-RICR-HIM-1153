@@ -1,7 +1,9 @@
 import React from 'react';
 import { FiPlay, FiClock, FiList, FiTarget, FiBriefcase } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const InterviewSetup = ({ onStart }) => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden max-w-4xl mx-auto mt-4">
       <div className="p-8 text-center border-b border-slate-100 bg-slate-50/50">
@@ -69,7 +71,7 @@ const InterviewSetup = ({ onStart }) => {
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 border-t border-slate-100">
           <button 
-            onClick={() => console.log('View history')}
+            onClick={() => navigate('/dashboard/history')}
             className="px-6 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-medium transition-colors cursor-pointer w-full sm:w-auto text-center"
           >
             View Previous Interviews
