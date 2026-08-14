@@ -9,7 +9,7 @@ import {
   FiSettings,
   FiLogOut,
 } from 'react-icons/fi';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   {

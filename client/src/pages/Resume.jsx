@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../api/axios';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import ResumeHeader from '../components/dashboard/resume/ResumeHeader';
@@ -8,25 +9,7 @@ import ResumeOverview from '../components/dashboard/resume/ResumeOverview';
 import ResumePreview from '../components/dashboard/resume/ResumePreview';
 import ResumeDetails from '../components/dashboard/resume/ResumeDetails';
 import ReplaceResumeModal from '../components/dashboard/resume/ReplaceResumeModal';
-
-const mockResume = {
-  fileName: "Om_Dwivedi_Resume.pdf",
-  fileType: "PDF",
-  fileSize: "1.8 MB",
-  uploadedAt: "Aug 12, 2026",
-  lastAnalyzed: "Aug 12, 2026",
-  status: "Ready for Analysis",
-  targetRole: "Backend Engineer"
-};
-
-const mockDetails = {
-  name: "Om Dwivedi",
-  targetRole: "Backend Engineer",
-  experience: "Entry Level",
-  education: "B.Tech Computer Science",
-  skills: ["JavaScript", "Node.js", "React", "MongoDB", "Express.js"],
-  projects: 3
-};
+import CareerTargetForm from '../components/dashboard/resume/CareerTargetForm';
 
 const Resume = () => {
   const [hasResume, setHasResume] = useState(false);
@@ -36,9 +19,18 @@ const Resume = () => {
   
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchActiveResume();
-  }, []);
+  const [activeTarget, setActiveTarget] = useState(null);
+
+  const fetchActiveTarget = async () => {
+    try {
+      const response = await api.get('/targets/active');
+      if (response.data.success && response.data.data) {
+        setActiveTarget(response.data.data);
+      }
+    } catch (error) {
+      console.log('No active target found');
+    }
+  };
 
   const fetchActiveResume = async () => {
     try {
@@ -54,8 +46,8 @@ const Resume = () => {
           uploadedAt: new Date(rd.uploadedAt).toLocaleDateString(),
           lastAnalyzed: rd.parsedData ? new Date(rd.updatedAt).toLocaleDateString() : 'Not analyzed yet',
           status: rd.parsedData ? "Analyzed" : "Ready for Analysis",
-          targetRole: "Backend Engineer", // Still hardcoded without Career Target Phase
-          fileUrl: rd.file.fileUrl
+          fileUrl: rd.file.fileUrl,
+          parsedData: rd.parsedData
         });
       }
     } catch (error) {
@@ -65,12 +57,62 @@ const Resume = () => {
     }
   };
 
+  useEffect(() => {
+    fetchActiveResume();
+    fetchActiveTarget();
+  }, []);
+
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const handleUploadSuccess = () => {
     fetchActiveResume();
   };
 
-  const handleAnalyze = () => {
-    navigate('/dashboard/analysis');
+  const handleAnalyze = async () => {
+    if (!activeResume) {
+      toast.error('Please upload a resume first');
+      return;
+    }
+    if (!activeTarget) {
+      toast.error('Please save your career target first');
+      return;
+    }
+
+    setIsProcessing(true);
+    
+    let resumeSuccess = false;
+    let targetSuccess = false;
+
+    try {
+      if (!activeResume.parsedData) {
+        toast.loading('Understanding your resume...', { id: 'ai-process' });
+        const resResponse = await api.post('/resumes/structure');
+        if (resResponse.data.success) resumeSuccess = true;
+      } else {
+        resumeSuccess = true;
+      }
+
+      if (!activeTarget.jobDescription?.extractedRequirements) {
+        toast.loading('Extracting job requirements...', { id: 'ai-process' });
+        const tgtResponse = await api.post('/targets/structure');
+        if (tgtResponse.data.success) targetSuccess = true;
+      } else {
+        targetSuccess = true;
+      }
+
+      if (resumeSuccess && targetSuccess) {
+        toast.success('AI processing complete!', { id: 'ai-process' });
+        await fetchActiveResume();
+        await fetchActiveTarget();
+      } else {
+        toast.error('Some AI processing failed. Please retry.', { id: 'ai-process' });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || 'Failed to process with AI', { id: 'ai-process' });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -80,6 +122,7 @@ const Resume = () => {
           hasResume={hasResume} 
           onAnalyze={handleAnalyze}
           onReplace={() => setIsReplaceModalOpen(true)}
+          isProcessing={isProcessing}
         />
         
         {!hasResume ? (
@@ -89,7 +132,7 @@ const Resume = () => {
         ) : (
           <div className="flex flex-col gap-6 pb-12">
             <ResumeOverview 
-              resume={activeResume || mockResume} 
+              resume={activeResume} 
               onView={() => console.log('View full screen resume')}
               onReplace={() => setIsReplaceModalOpen(true)}
             />
@@ -98,8 +141,32 @@ const Resume = () => {
               <div className="lg:col-span-2">
                 <ResumePreview fileUrl={activeResume?.fileUrl} />
               </div>
-              <div className="lg:col-span-1">
-                <ResumeDetails details={mockDetails} />
+              <div className="lg:col-span-1 flex flex-col gap-6">
+                <CareerTargetForm 
+                  initialTarget={activeTarget} 
+                  onSave={(newTarget) => setActiveTarget(newTarget)} 
+                />
+                <ResumeDetails 
+                  details={
+                    activeResume?.parsedData 
+                      ? {
+                          name: activeResume.parsedData.personalInfo?.name || "Not Found",
+                          targetRole: activeTarget?.role || "Not set",
+                          experience: activeResume.parsedData.experience?.[0]?.jobTitle || "No experience listed",
+                          education: activeResume.parsedData.education?.[0]?.degree || "No education listed",
+                          skills: activeResume.parsedData.skills?.map(s => s.name || s).slice(0, 5) || [],
+                          projects: activeResume.parsedData.projects?.length || 0
+                        }
+                      : {
+                          name: "Pending Analysis",
+                          targetRole: activeTarget?.role || "Not set",
+                          experience: "Pending Analysis",
+                          education: "Pending Analysis",
+                          skills: [],
+                          projects: 0
+                        }
+                  } 
+                />
               </div>
             </div>
           </div>
