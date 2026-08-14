@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const WhyCareerLens = () => {
   return (
-    <section className="py-24 bg-white">
+    <section id="about-us" className="py-24 bg-white">
       <div className="max-w-[var(--container-width)] mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-12 text-center tracking-tight">
           More Than a Resume Checker

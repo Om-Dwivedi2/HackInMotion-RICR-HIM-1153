@@ -25,9 +25,9 @@ const AppContent = () => {
     <div className="flex flex-col min-h-screen w-full bg-[var(--background)]">
       <Toaster position="top-center" />
 
-      {!isDashboard && <Navbar />}
+      <Navbar />
 
-      <main className="flex-grow">
+      <main className="flex-grow flex flex-col">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

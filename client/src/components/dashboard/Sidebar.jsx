@@ -58,12 +58,7 @@ const Sidebar = () => {
       <div className="flex-1 py-8 flex flex-col gap-1 px-4">
 
         {navItems.map((item) => {
-          const isActive =
-            location.pathname === item.path ||
-            (
-              item.path === '/dashboard' &&
-              location.pathname === '/'
-            );
+          const isActive = location.pathname === item.path;
 
           return (
             <NavLink
