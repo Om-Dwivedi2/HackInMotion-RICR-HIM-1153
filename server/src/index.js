@@ -4,6 +4,7 @@ dns.setServers([
   "8.8.8.8",
   "1.1.1.1"
 ]);
+
 import { envConfig } from "./config/env.config.js";
 import { connectDB } from "./config/db.config.js";
 import mongoose from "mongoose";

@@ -7,7 +7,6 @@ import ResumeHeader from '../components/dashboard/resume/ResumeHeader';
 import ResumeUploadCard from '../components/dashboard/resume/ResumeUploadCard';
 import ResumeOverview from '../components/dashboard/resume/ResumeOverview';
 import ResumePreview from '../components/dashboard/resume/ResumePreview';
-import ResumeDetails from '../components/dashboard/resume/ResumeDetails';
 import ReplaceResumeModal from '../components/dashboard/resume/ReplaceResumeModal';
 import CareerTargetForm from '../components/dashboard/resume/CareerTargetForm';
 
@@ -162,27 +161,7 @@ const Resume = () => {
                   initialTarget={activeTarget} 
                   onSave={(newTarget) => setActiveTarget(newTarget)} 
                 />
-                <ResumeDetails 
-                  details={
-                    activeResume?.parsedData 
-                      ? {
-                          name: activeResume.parsedData.personalInfo?.name || "Not Found",
-                          targetRole: activeTarget?.role || "Not set",
-                          experience: activeResume.parsedData.experience?.[0]?.jobTitle || "No experience listed",
-                          education: activeResume.parsedData.education?.[0]?.degree || "No education listed",
-                          skills: activeResume.parsedData.skills?.map(s => s.name || s).slice(0, 5) || [],
-                          projects: activeResume.parsedData.projects?.length || 0
-                        }
-                      : {
-                          name: "Pending Analysis",
-                          targetRole: activeTarget?.role || "Not set",
-                          experience: "Pending Analysis",
-                          education: "Pending Analysis",
-                          skills: [],
-                          projects: 0
-                        }
-                  } 
-                />
+
               </div>
             </div>
           </div>
