@@ -79,11 +79,12 @@ const Resume = () => {
     }
 
     setIsProcessing(true);
-    
-    let resumeSuccess = false;
-    let targetSuccess = false;
+    let readyForAnalysis = false;
 
     try {
+      let resumeSuccess = false;
+      let targetSuccess = false;
+
       if (!activeResume.parsedData) {
         toast.loading('Understanding your resume...', { id: 'ai-process' });
         const resResponse = await api.post('/resumes/structure');
@@ -101,16 +102,31 @@ const Resume = () => {
       }
 
       if (resumeSuccess && targetSuccess) {
-        toast.success('AI processing complete!', { id: 'ai-process' });
+        readyForAnalysis = true;
         await fetchActiveResume();
         await fetchActiveTarget();
       } else {
-        toast.error('Some AI processing failed. Please retry.', { id: 'ai-process' });
+        toast.error('Some AI data prep failed. Please retry.', { id: 'ai-process' });
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || 'Failed to process with AI', { id: 'ai-process' });
-    } finally {
+      toast.error(error.response?.data?.message || 'Failed to prepare data with AI', { id: 'ai-process' });
+    } 
+
+    if (readyForAnalysis) {
+      toast.loading('Running AI Analysis...', { id: 'ai-process' });
+      try {
+        const analysisResponse = await api.post('/analysis/analyze');
+        if (analysisResponse.data.success) {
+          toast.success('Analysis complete!', { id: 'ai-process' });
+          navigate('/dashboard/analysis');
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Failed to analyze', { id: 'ai-process' });
+      } finally {
+        setIsProcessing(false);
+      }
+    } else {
       setIsProcessing(false);
     }
   };

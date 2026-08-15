@@ -1,8 +1,7 @@
 import Resume from "../modules/resume/resume.model.js";
 import CareerTarget from "../modules/careerTarget/careerTarget.model.js";
 import Analysis from "../modules/analysis/analysis.model.js";
-import { calculateDeterministicScore } from "../services/analysis.service.js";
-import { generateAnalysisExplanation } from "../services/ai.service.js";
+import { analyzeResumeVsJobWithAI } from "../services/ai.service.js";
 import { AppError } from "../utils/error.utils.js";
 
 export const analyzeResumeVsJob = async (req, res, next) => {
@@ -26,40 +25,28 @@ export const analyzeResumeVsJob = async (req, res, next) => {
       throw new AppError("Job description has not been parsed yet", 400);
     }
 
-    // 2. Deterministic Comparison
-    const deterministicFindings = calculateDeterministicScore(
+    // 2. AI Comparison & Explanation
+    const aiAnalysis = await analyzeResumeVsJobWithAI(
       resume.parsedData,
-      target.jobDescription.extractedRequirements
+      target.jobDescription.extractedRequirements,
+      { role: target.role, company: target.company || 'Unknown' }
     );
 
-    // 3. AI Explanation & Recommendations
-    let aiExplanation = { recommendations: [] };
-    try {
-      aiExplanation = await generateAnalysisExplanation(
-        deterministicFindings,
-        deterministicFindings.score,
-        { role: target.role, company: target.company || 'Unknown' }
-      );
-    } catch (error) {
-      console.warn("AI Explanation failed, proceeding with deterministic results only:", error);
-    }
-
-    // 4. Save Analysis
+    // 3. Save Analysis
     const analysis = new Analysis({
       userId,
       resumeId: resume._id,
       careerTargetId: target._id,
       status: "completed",
-      matchScore: {
-        score: deterministicFindings.score,
-        label: deterministicFindings.label,
-      },
-      skillAnalysis: deterministicFindings.skillAnalysis,
-      keywordAnalysis: deterministicFindings.keywordAnalysis,
-      strengths: deterministicFindings.strengths,
-      recommendations: aiExplanation.recommendations || [],
+      matchScore: aiAnalysis.matchScore,
+      skillAnalysis: aiAnalysis.skillAnalysis,
+      keywordAnalysis: aiAnalysis.keywordAnalysis,
+      experienceProjectFit: aiAnalysis.experienceProjectFit,
+      strengths: aiAnalysis.strengths || [],
+      weaknesses: aiAnalysis.weaknesses || [],
+      recommendations: aiAnalysis.recommendations || [],
       aiMetadata: {
-        model: process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
+        model: "openrouter",
         analyzedAt: new Date(),
       },
     });
