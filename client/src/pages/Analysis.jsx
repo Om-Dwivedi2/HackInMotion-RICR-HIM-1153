@@ -68,10 +68,10 @@ const Analysis = () => {
     lastAnalyzed: new Date(analysisData.createdAt).toLocaleDateString(),
 
     breakdown: {
-      skills: analysisData.matchScore?.score || 0, // Simplified for now
-      keywords: analysisData.matchScore?.score || 0,
-      experience: analysisData.matchScore?.score || 0,
-      education: analysisData.matchScore?.score || 0
+      skills: analysisData.matchScore?.breakdown?.skills || analysisData.matchScore?.score || 0,
+      keywords: analysisData.matchScore?.breakdown?.keywords || analysisData.matchScore?.score || 0,
+      experience: analysisData.matchScore?.breakdown?.experience || analysisData.matchScore?.score || 0,
+      education: analysisData.matchScore?.breakdown?.education || analysisData.matchScore?.score || 0
     },
 
     strongSkills: analysisData.skillAnalysis?.matched?.map(s => s.skill) || [],

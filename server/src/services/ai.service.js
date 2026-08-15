@@ -17,69 +17,102 @@ const callOpenRouter = async (prompt) => {
     headers['X-Title'] = envConfig.openRouterSiteName;
   }
 
-  const body = JSON.stringify({
-    model: envConfig.openRouterModel,
-    messages: [{ role: 'user', content: prompt }],
-    // No response_format {"type": "json_object"} specified to support a wider range of models, 
-    // we explicitly tell it to output JSON in the prompt and parse carefully.
-  });
+  // Model fallback chain
+  const candidateModels = [
+    envConfig.openRouterModel,
+    'openai/gpt-4o-mini',
+    'anthropic/claude-3-haiku',
+    'meta-llama/llama-3.3-70b-instruct'
+  ].filter((m, idx, arr) => m && arr.indexOf(m) === idx);
 
-  try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers,
-      body,
-      // Provide a reasonable timeout if the fetch environment supports it, 
-      // otherwise relying on network timeout
-      signal: AbortSignal.timeout(60000) 
-    });
+  let lastError = null;
 
-    if (!response.ok) {
-      let errorBody = '';
-      try {
-        errorBody = await response.text();
-      } catch (e) {
-        // ignore
+  for (const model of candidateModels) {
+    try {
+      const body = JSON.stringify({
+        model: model,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 2500,
+      });
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers,
+        body,
+        signal: AbortSignal.timeout(45000)
+      });
+
+      if (!response.ok) {
+        let errorBody = '';
+        try {
+          errorBody = await response.text();
+        } catch (e) {}
+
+        console.warn(`[OpenRouter Warning] Model ${model} returned status ${response.status}:`, errorBody);
+
+        if (response.status === 401) {
+          throw new Error('AI Service Configuration Error: Unauthorized. Check API Key.');
+        } else if (response.status === 402) {
+          throw new Error('AI Service Provider Error: Payment Required or Insufficient Credits.');
+        }
+
+        // For other statuses (like 404 or 429), try next candidate model
+        lastError = new Error(`AI Service Request Failed for model ${model} (Status: ${response.status})`);
+        continue;
       }
-      
-      console.error(`OpenRouter API Error: Status ${response.status}`, errorBody);
-      
-      if (response.status === 401) {
-         throw new Error('AI Service Configuration Error: Unauthorized. Check API Key.');
-      } else if (response.status === 402) {
-         throw new Error('AI Service Provider Error: Payment Required or Insufficient Credits.');
-      } else if (response.status === 429) {
-         throw new Error('AI Service Provider Error: Rate limit exceeded.');
+
+      const data = await response.json();
+      if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
+        throw new Error('Invalid response structure from AI Provider');
       }
-      
-      throw new Error(`AI Service Request Failed (Status: ${response.status})`);
-    }
 
-    const data = await response.json();
-    
-    if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
-      throw new Error('Invalid response structure from AI Provider');
+      return data.choices[0].message.content;
+    } catch (err) {
+      if (err.message?.includes('Unauthorized') || err.message?.includes('Payment Required')) {
+        throw err;
+      }
+      console.warn(`[OpenRouter Model ${model} Error]:`, err.message);
+      lastError = err;
     }
-
-    return data.choices[0].message.content;
-  } catch (error) {
-    if (error.name === 'TimeoutError' || error.name === 'AbortError') {
-      throw new Error('AI Service temporarily unavailable (Timeout)');
-    }
-    throw error;
   }
+
+  throw lastError || new Error('All AI models failed to respond.');
 };
 
 const extractJson = (text) => {
+  if (!text) throw new Error('Empty response received from AI service');
+  
   let cleanText = text.trim();
-  // Strip markdown code block wrappers if model ignored the instruction
+  
+  // Strip markdown code block wrappers
   if (cleanText.startsWith('```json')) cleanText = cleanText.substring(7);
   else if (cleanText.startsWith('```')) cleanText = cleanText.substring(3);
-  
   if (cleanText.endsWith('```')) cleanText = cleanText.substring(0, cleanText.length - 3);
-  
-  return JSON.parse(cleanText.trim());
-}
+  cleanText = cleanText.trim();
+
+  // Try direct parse
+  try {
+    return JSON.parse(cleanText);
+  } catch (directError) {
+    // Attempt substring extraction between first { and last }
+    const firstBrace = cleanText.indexOf('{');
+    const lastBrace = cleanText.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      const bracketJson = cleanText.substring(firstBrace, lastBrace + 1);
+      return JSON.parse(bracketJson);
+    }
+    
+    // Attempt substring extraction between first [ and last ]
+    const firstBracket = cleanText.indexOf('[');
+    const lastBracket = cleanText.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket > firstBracket) {
+      const arrayJson = cleanText.substring(firstBracket, lastBracket + 1);
+      return JSON.parse(arrayJson);
+    }
+
+    throw directError;
+  }
+};
 
 export const parseResumeText = async (rawText) => {
   try {
@@ -162,34 +195,58 @@ export const parseJobDescriptionText = async (rawText) => {
   }
 };
 
-export const generateAnalysisExplanation = async (deterministicFindings, score, targetContext) => {
+export const analyzeResumeVsJobWithAI = async (resumeData, jdData, targetContext) => {
   try {
     const prompt = `
-      You are an expert career coach and technical recruiter.
-      You are receiving DETERMINISTIC analysis findings comparing a candidate's resume to a job description.
-      Your job is to EXPLAIN these findings and provide ACTIONABLE recommendations.
+      You are an expert technical recruiter and ATS system.
+      Your task is to deeply analyze a candidate's resume against a job description.
 
       CRITICAL INSTRUCTIONS:
       - Return ONLY valid JSON, do not include markdown blocks like \`\`\`json or \`\`\`.
-      - DO NOT change the score (${score}%).
-      - Base all feedback on the provided deterministic findings. Do NOT invent missing skills or fabricate evidence.
-      - Recommendations must be specific (e.g., "Add concrete REST API evidence to the project where you implemented Node.js") rather than generic (e.g., "Improve technical skills").
-      
-      Deterministic Findings:
-      ${JSON.stringify(deterministicFindings, null, 2)}
-      
+      - Be objective and strict. Do not invent missing skills.
+      - Calculate a realistic overall match score between 0 and 100.
+      - Provide sub-scores (0-100) for skills, keywords, experience, and education.
+
+      Resume Data:
+      ${JSON.stringify(resumeData, null, 2)}
+
+      Job Requirements:
+      ${JSON.stringify(jdData, null, 2)}
+
       Target Context:
       Role: ${targetContext.role}
       Company: ${targetContext.company}
-      
-      The JSON must perfectly match this structure:
+
+      The JSON MUST perfectly match this structure:
       {
-        "recommendations": [
-          {
-            "title": "Short actionable title",
-            "description": "Specific action the user should take based on the findings",
-            "priority": "high" | "medium" | "low"
+        "matchScore": {
+          "score": <0-100 number>,
+          "label": "Strong Match" | "Moderate Match" | "Low Match",
+          "breakdown": {
+            "skills": <0-100 number>,
+            "keywords": <0-100 number>,
+            "experience": <0-100 number>,
+            "education": <0-100 number>
           }
+        },
+        "skillAnalysis": {
+          "matched": [{ "skill": "Skill Name", "evidence": "Where it was found" }],
+          "weak": [{ "skill": "Skill Name", "evidence": "Mentioned context", "reason": "Why it's weak" }],
+          "missing": [{ "skill": "Skill Name", "priority": "high" | "medium" | "low", "reason": "Why it's important" }]
+        },
+        "keywordAnalysis": {
+          "matched": ["keyword1", "keyword2"],
+          "weak": ["keyword3"],
+          "missing": ["keyword4"]
+        },
+        "experienceProjectFit": {
+          "experience": { "level": "strong" | "moderate" | "weak" | "poor", "explanation": "..." },
+          "projects": { "level": "strong" | "moderate" | "weak" | "poor", "explanation": "..." }
+        },
+        "strengths": ["Strength 1", "Strength 2"],
+        "weaknesses": ["Weakness 1", "Weakness 2"],
+        "recommendations": [
+          { "title": "Actionable title", "description": "Specific action", "priority": "high" | "medium" | "low" }
         ]
       }
     `;
@@ -197,9 +254,8 @@ export const generateAnalysisExplanation = async (deterministicFindings, score, 
     const textResponse = await callOpenRouter(prompt);
     return extractJson(textResponse);
   } catch (error) {
-    console.error('OpenRouter Analysis Explanation Error:', error);
-    // Return empty recommendations if OpenRouter fails, do not throw so deterministic analysis is saved
-    return { recommendations: [] };
+    console.error('OpenRouter AI Analysis Error:', error);
+    throw new Error(error.message || 'Failed to analyze resume with AI');
   }
 };
 

@@ -17,7 +17,9 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-if (!process.env.OPENROUTER_API_KEY) {
+const apiKey = process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY;
+
+if (!apiKey) {
   console.error(`[Env Warning] OPENROUTER_API_KEY is not configured. AI features will fail.`);
 }
 
@@ -28,8 +30,8 @@ export const envConfig = {
   clientUrl: process.env.CLIENT_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
-  openRouterApiKey: process.env.OPENROUTER_API_KEY,
-  openRouterModel: process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",
+  openRouterApiKey: apiKey,
+  openRouterModel: process.env.OPENROUTER_MODEL || process.env.ANTHROPIC_MODEL || "openai/gpt-4o-mini",
   openRouterSiteUrl: process.env.OPENROUTER_SITE_URL || "",
   openRouterSiteName: process.env.OPENROUTER_SITE_NAME || "CareerLens",
 };

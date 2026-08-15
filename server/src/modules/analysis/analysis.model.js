@@ -8,6 +8,12 @@ const matchScoreSchema = new mongoose.Schema(
       max: 100,
     },
     label: String,
+    breakdown: {
+      skills: { type: Number, min: 0, max: 100, default: 0 },
+      keywords: { type: Number, min: 0, max: 100, default: 0 },
+      experience: { type: Number, min: 0, max: 100, default: 0 },
+      education: { type: Number, min: 0, max: 100, default: 0 },
+    }
   },
   { _id: false }
 );
