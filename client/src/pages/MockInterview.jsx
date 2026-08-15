@@ -76,13 +76,15 @@ const MockInterview = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (!currentAnswer.trim()) {
+  const handleSubmit = (finalAnswerText) => {
+    const textToSubmit = typeof finalAnswerText === 'string' ? finalAnswerText : currentAnswer;
+    
+    if (!textToSubmit.trim()) {
       toast.error('Please provide an answer before submitting.');
       return;
     }
     const currentQ = interviewSession.questions[currentQuestionIndex];
-    setAnswers(prev => [...prev, { questionId: currentQ.id, text: currentAnswer }]);
+    setAnswers(prev => [...prev, { questionId: currentQ.id, text: textToSubmit }]);
     setShowFeedback(true);
   };
 
